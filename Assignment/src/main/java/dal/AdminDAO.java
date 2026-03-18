@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Xe;
 
-public class AdminDAO extends DBContext{
+public class AdminDAO extends DBContext {
 
     public void addXe(String maXe, String bienSo, String loaiXe) {
         if (connection == null) {
-            throw new RuntimeException("Database connection is null! Have you rebuilt the project and restarted the server after the previous fix?");
+            throw new RuntimeException("Database connection is null!");
         }
-        // Use explicit columns to avoid issues if the table has extra columns
-        String sql = "INSERT INTO Xe(maXe, bienSo, loaiXe) VALUES(?,?,?)";
+        // Actual column names in DB: MaXe, BienSoXe, TenLoaiXe
+        String sql = "INSERT INTO Xe(MaXe, BienSoXe, TenLoaiXe) VALUES(?,?,?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, maXe);
-            st.setString(2, bienSo);
-            st.setString(3, loaiXe);
+            st.setString(1, maXe.trim());
+            st.setString(2, bienSo.trim());
+            st.setString(3, loaiXe.trim());
             st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error adding vehicle (maybe duplicate maXe?): " + e.getMessage(), e);
+            throw new RuntimeException("Lỗi thêm xe (Mã xe trùng hoặc Loại xe không hợp lệ - chỉ chấp nhận 'Xe dap' hoặc 'Xe may'): " + e.getMessage(), e);
         }
     }
 
@@ -32,15 +32,15 @@ public class AdminDAO extends DBContext{
             throw new RuntimeException("Database connection is null!");
         }
         List<Xe> list = new ArrayList<>();
-        String sql = "SELECT * FROM Xe";
+        String sql = "SELECT MaXe, BienSoXe, TenLoaiXe FROM Xe";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 list.add(new Xe(
-                        rs.getString(1),
-                        rs.getString(2),
-                        rs.getString(3)
+                        rs.getString("MaXe"),
+                        rs.getString("BienSoXe"),
+                        rs.getString("TenLoaiXe")
                 ));
             }
         } catch (Exception e) {
@@ -54,16 +54,16 @@ public class AdminDAO extends DBContext{
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "SELECT * FROM Xe WHERE maXe = ?";
+        String sql = "SELECT MaXe, BienSoXe, TenLoaiXe FROM Xe WHERE MaXe = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, id);
+            st.setString(1, id.trim());
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return new Xe(
-                        rs.getString(1),
-                        rs.getString(2),
-                        rs.getString(3)
+                        rs.getString("MaXe"),
+                        rs.getString("BienSoXe"),
+                        rs.getString("TenLoaiXe")
                 );
             }
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class AdminDAO extends DBContext{
             st.setString(3, maXe.trim());
             int rows = st.executeUpdate();
             if (rows == 0) {
-                throw new RuntimeException("No rows updated in DB! Verify if maXe '" + maXe + "' exists.");
+                throw new RuntimeException("Không tìm thấy MaXe '" + maXe + "' trong database!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,10 +97,10 @@ public class AdminDAO extends DBContext{
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "DELETE FROM Xe WHERE maXe=?";
+        String sql = "DELETE FROM Xe WHERE MaXe=?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, maXe);
+            st.setString(1, maXe.trim());
             st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

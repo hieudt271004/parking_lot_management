@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Trang
  */
-@WebServlet(name="QuanLyNhanVien", urlPatterns={"/quanlynhanvien"})
+@WebServlet(name="QuanLyNhanVien", urlPatterns={"/old-quanlynhanvien"})
 public class QuanLyNhanVien extends HttpServlet {
    
     /** 

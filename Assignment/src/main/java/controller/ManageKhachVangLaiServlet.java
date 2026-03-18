@@ -16,29 +16,24 @@ public class ManageKhachVangLaiServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        if(request.getSession().getAttribute("adminInfo") == null){
+
+        if (request.getSession().getAttribute("adminInfo") == null) {
             response.sendRedirect("admin-login");
             return;
         }
-        
+
         KhachVangLaiDAO dao = new KhachVangLaiDAO();
         String action = request.getParameter("action");
-
-        if (action == null) {
-            action = "list";
-        }
+        if (action == null) action = "list";
 
         switch (action) {
             case "delete":
-                String idDelete = request.getParameter("id");
-                dao.deleteKhachVangLai(idDelete);
+                dao.deleteKhachVangLai(request.getParameter("id"));
                 response.sendRedirect("manage-khachvanglai");
                 break;
             case "edit":
-                String idEdit = request.getParameter("id");
-                KhachVangLaiDTO kvlEdit = dao.getKhachVangLaiById(idEdit);
-                request.setAttribute("kvl", kvlEdit);
+                KhachVangLaiDTO kvl = dao.getKhachVangLaiById(request.getParameter("id"));
+                request.setAttribute("kvl", kvl);
                 request.getRequestDispatcher("manageKhachVangLai.jsp").forward(request, response);
                 break;
             default:
@@ -52,19 +47,15 @@ public class ManageKhachVangLaiServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
         KhachVangLaiDAO dao = new KhachVangLaiDAO();
 
         if ("add".equals(action)) {
-            String maTheKVL = request.getParameter("maTheKVL");
-            String maXe = request.getParameter("maXe");
-            dao.addKhachVangLai(maTheKVL, maXe);
+            dao.addKhachVangLai(request.getParameter("maTheKVL"), request.getParameter("maXe"));
         } else if ("update".equals(action)) {
-            String maTheKVL = request.getParameter("maTheKVL");
-            String maXe = request.getParameter("maXe");
-            dao.updateKhachVangLai(maTheKVL, maXe);
+            dao.updateKhachVangLai(request.getParameter("maTheKVL"), request.getParameter("maXe"));
         }
         response.sendRedirect("manage-khachvanglai");
     }

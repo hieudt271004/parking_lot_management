@@ -13,14 +13,15 @@ public class NhanVienDAO extends DBContext {
             throw new RuntimeException("Database connection is null!");
         }
         List<NhanVienDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM NhanVien";
+        // NhanVien table: MaNV (FK -> NguoiDung), ViTriNhanVien
+        String sql = "SELECT MaNV, ViTriNhanVien FROM NhanVien";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 list.add(new NhanVienDTO(
-                        rs.getString(1),
-                        rs.getString(2)
+                        rs.getString("MaNV"),
+                        rs.getString("ViTriNhanVien")
                 ));
             }
         } catch (Exception e) {
@@ -34,15 +35,15 @@ public class NhanVienDAO extends DBContext {
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "SELECT * FROM NhanVien WHERE maNV = ?";
+        String sql = "SELECT MaNV, ViTriNhanVien FROM NhanVien WHERE MaNV = ?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, maNV);
+            st.setString(1, maNV.trim());
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return new NhanVienDTO(
-                        rs.getString(1),
-                        rs.getString(2)
+                        rs.getString("MaNV"),
+                        rs.getString("ViTriNhanVien")
                 );
             }
         } catch (Exception e) {
@@ -56,7 +57,8 @@ public class NhanVienDAO extends DBContext {
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "INSERT INTO NhanVien(maNV, viTriNhanVien) VALUES(?,?)";
+        // NOTE: NhanVien.MaNV is a FK to NguoiDung.MaND - the NguoiDung record must exist first!
+        String sql = "INSERT INTO NhanVien(MaNV, ViTriNhanVien) VALUES(?,?)";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, maNV.trim());
@@ -64,7 +66,7 @@ public class NhanVienDAO extends DBContext {
             st.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error adding NhanVien: " + e.getMessage(), e);
+            throw new RuntimeException("Lỗi thêm nhân viên (Mã NV phải tồn tại trong NguoiDung, và Vị trí chỉ được là 'Quan ly' hoặc 'Bao ve'): " + e.getMessage(), e);
         }
     }
 
@@ -72,14 +74,14 @@ public class NhanVienDAO extends DBContext {
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "UPDATE NhanVien SET viTriNhanVien=? WHERE maNV=?";
+        String sql = "UPDATE NhanVien SET ViTriNhanVien=? WHERE MaNV=?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, viTri.trim());
             st.setString(2, maNV.trim());
             int rows = st.executeUpdate();
             if (rows == 0) {
-                throw new RuntimeException("No rows updated in DB! Verify if maNV '" + maNV + "' exists.");
+                throw new RuntimeException("Không tìm thấy MaNV '" + maNV + "' trong database!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +93,7 @@ public class NhanVienDAO extends DBContext {
         if (connection == null) {
             throw new RuntimeException("Database connection is null!");
         }
-        String sql = "DELETE FROM NhanVien WHERE maNV=?";
+        String sql = "DELETE FROM NhanVien WHERE MaNV=?";
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, maNV.trim());

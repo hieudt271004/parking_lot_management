@@ -13,19 +13,19 @@
         <div class="header-links">
             <span>Welcome, <%= session.getAttribute("adminInfo") %></span> |
             <a href="manage-xe">Quản lý xe</a> |
-            <a href="manage-nhanvien">Quản lý nhân viên</a> |
+            <a href="manage-nhanvien">Nhân viên</a> |
             <a href="manage-ctravao">Chi tiết ra vào</a> |
             <a href="report.jsp">Báo cáo</a> |
-            <a href="admin-login">Đăng xuất</a>
+            <a href="logout">Đăng xuất</a>
         </div>
-        
-        <h1>Quản Lý Thông Tin Khách Vãng Lai</h1>
-        
+
+        <h1>Quản Lý Khách Vãng Lai</h1>
+
         <%
             KhachVangLaiDTO editingKVL = (KhachVangLaiDTO) request.getAttribute("kvl");
             boolean isEdit = editingKVL != null;
         %>
-        
+
         <div class="form-container">
             <h3><%= isEdit ? "Cập nhật Khách Vãng Lai" : "Thêm Khách Vãng Lai Mới" %></h3>
             <form action="manage-khachvanglai" method="post">
@@ -42,7 +42,7 @@
                     <%= isEdit ? "Cập Nhật" : "Thêm Mới" %>
                 </button>
                 <% if(isEdit) { %>
-                    <a href="manage-khachvanglai" class="btn btn-add" style="text-decoration: none; display:inline-block; margin-left:10px; background:#6c757d;">Hủy</a>
+                    <a href="manage-khachvanglai" class="btn" style="text-decoration: none; display:inline-block; margin-left:10px; background:#6c757d; color:white;">Hủy</a>
                 <% } %>
             </form>
         </div>
@@ -66,7 +66,7 @@
                     <td><%= kvl.getStrMaXe() %></td>
                     <td>
                         <a href="manage-khachvanglai?action=edit&id=<%= kvl.getStrMaTheKVL() %>" class="btn btn-edit">Sửa</a>
-                        <a href="manage-khachvanglai?action=delete&id=<%= kvl.getStrMaTheKVL() %>" class="btn btn-delete" onclick="return confirm('Bạn có chắc muốn xóa thẻ này?');">Xóa</a>
+                        <a href="manage-khachvanglai?action=delete&id=<%= kvl.getStrMaTheKVL() %>" class="btn btn-delete" onclick="return confirm('Xóa thẻ KVL này?');">Xóa</a>
                     </td>
                 </tr>
                 <%      }
