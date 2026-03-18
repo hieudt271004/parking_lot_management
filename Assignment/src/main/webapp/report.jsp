@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Báo Cáo Thống Kê</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9;}
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-        .back-link { display: block; text-align: left; margin-bottom: 20px; text-decoration: none; color: #007bff; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-<body>
+<body class="page-body">
     <%
         if(request.getSession().getAttribute("adminInfo") == null){
             response.sendRedirect("admin-login");

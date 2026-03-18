@@ -6,28 +6,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản Lý Xe</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9;}
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #333;}
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #007bff; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .form-container { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; background: #fafafa; border-radius: 4px; }
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: inline-block; width: 100px; }
-        .form-group input { padding: 8px; width: calc(100% - 120px); border: 1px solid #ccc; border-radius: 4px; }
-        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; }
-        .btn-add { background: #28a745; }
-        .btn-update { background: #ffc107; color: black; }
-        .btn-edit { background: #17a2b8; text-decoration: none; padding: 6px 10px; font-size: 14px; }
-        .btn-delete { background: #dc3545; text-decoration: none; padding: 6px 10px; font-size: 14px;}
-        .header-links { margin-bottom: 20px; text-align: right; }
-        .header-links a { margin-left: 15px; text-decoration: none; color: #007bff; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
-<body>
+<body class="page-body">
     <div class="container">
         <div class="header-links">
             <span>Welcome, <%= session.getAttribute("adminInfo") %></span> |

@@ -1,18 +1,17 @@
 package controller;
 
+import dal.KhachVangLaiDAO;
+import dto.KhachVangLaiDTO;
 import java.io.IOException;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import dal.NhanVienDAO;
-import dto.NhanVienDTO;
-import java.util.List;
-
-@WebServlet(name = "ManageNhanVienServlet", urlPatterns = {"/manage-nhanvien"})
-public class ManageNhanVienServlet extends HttpServlet {
+@WebServlet(name = "ManageKhachVangLaiServlet", urlPatterns = {"/manage-khachvanglai"})
+public class ManageKhachVangLaiServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -23,7 +22,7 @@ public class ManageNhanVienServlet extends HttpServlet {
             return;
         }
         
-        NhanVienDAO dao = new NhanVienDAO();
+        KhachVangLaiDAO dao = new KhachVangLaiDAO();
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -33,19 +32,19 @@ public class ManageNhanVienServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 String idDelete = request.getParameter("id");
-                dao.deleteNhanVien(idDelete);
-                response.sendRedirect("manage-nhanvien");
+                dao.deleteKhachVangLai(idDelete);
+                response.sendRedirect("manage-khachvanglai");
                 break;
             case "edit":
                 String idEdit = request.getParameter("id");
-                NhanVienDTO nvEdit = dao.getNhanVienById(idEdit);
-                request.setAttribute("nv", nvEdit);
-                request.getRequestDispatcher("manageNhanVien.jsp").forward(request, response);
+                KhachVangLaiDTO kvlEdit = dao.getKhachVangLaiById(idEdit);
+                request.setAttribute("kvl", kvlEdit);
+                request.getRequestDispatcher("manageKhachVangLai.jsp").forward(request, response);
                 break;
             default:
-                List<NhanVienDTO> list = dao.getAllNhanVien();
-                request.setAttribute("listNV", list);
-                request.getRequestDispatcher("manageNhanVien.jsp").forward(request, response);
+                List<KhachVangLaiDTO> list = dao.getAllKhachVangLai();
+                request.setAttribute("listKVL", list);
+                request.getRequestDispatcher("manageKhachVangLai.jsp").forward(request, response);
                 break;
         }
     }
@@ -56,17 +55,17 @@ public class ManageNhanVienServlet extends HttpServlet {
         
         request.setCharacterEncoding("UTF-8");
         String action = request.getParameter("action");
-        NhanVienDAO dao = new NhanVienDAO();
+        KhachVangLaiDAO dao = new KhachVangLaiDAO();
 
         if ("add".equals(action)) {
-            String maNV = request.getParameter("maNV");
-            String viTri = request.getParameter("viTri");
-            dao.addNhanVien(maNV, viTri);
+            String maTheKVL = request.getParameter("maTheKVL");
+            String maXe = request.getParameter("maXe");
+            dao.addKhachVangLai(maTheKVL, maXe);
         } else if ("update".equals(action)) {
-            String maNV = request.getParameter("maNV");
-            String viTri = request.getParameter("viTri");
-            dao.updateNhanVien(maNV, viTri);
+            String maTheKVL = request.getParameter("maTheKVL");
+            String maXe = request.getParameter("maXe");
+            dao.updateKhachVangLai(maTheKVL, maXe);
         }
-        response.sendRedirect("manage-nhanvien");
+        response.sendRedirect("manage-khachvanglai");
     }
 }
