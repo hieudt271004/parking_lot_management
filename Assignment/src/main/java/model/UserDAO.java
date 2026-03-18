@@ -1,15 +1,16 @@
 package model;
 
-import database.DBConnection;
+
+import dal.DBContext;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDAO {
+public class UserDAO extends DBContext{
 
     public User login(String email, String password) {
         String sql = "SELECT * FROM NguoiDung WHERE Email = ? AND MatKhau = ?";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, email);
@@ -28,7 +29,7 @@ public class UserDAO {
     public boolean register(User user) {
         String sql = "INSERT INTO NguoiDung (MaND, Email, MatKhau, HoTen, GioiTinh, NgSinh, DiaChi, QueQuan, SDT, VaiTro) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, user.getId());
@@ -56,7 +57,7 @@ public class UserDAO {
 
     public boolean updatePassword(String id, String newPassword) {
         String sql = "UPDATE NguoiDung SET MatKhau = ? WHERE MaND = ?";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, newPassword);
             pstmt.setString(2, id);
@@ -69,7 +70,7 @@ public class UserDAO {
 
     public boolean updateProfile(User user) {
         String sql = "UPDATE NguoiDung SET HoTen = ?, GioiTinh = ?, NgSinh = ?, DiaChi = ?, QueQuan = ?, SDT = ? WHERE MaND = ?";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn =  DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, user.getFullName());
@@ -93,7 +94,7 @@ public class UserDAO {
 
     public User getUserById(String id) {
         String sql = "SELECT * FROM NguoiDung WHERE MaND = ?";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -110,7 +111,7 @@ public class UserDAO {
         List<User> list = new ArrayList<>();
         // Lấy những người có vai trò Khách hàng
         String sql = "SELECT * FROM NguoiDung WHERE VaiTro = 'Khach hang'";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
