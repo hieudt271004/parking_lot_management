@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,12 @@ import jakarta.servlet.http.HttpSession;
 
 import model.User;
 import model.UserDAO;
+import dto.KhachHangDTO;
+import dto.LoaiVeDTO;
+import dto.VeDTO;
+import dal.KhachHangDAO;
+import dal.LoaiVeDAO;
+import dal.VeDAO;
 
 @WebServlet(name = "UserController", urlPatterns = {"/UserController"})
 public class UserController extends HttpServlet {
@@ -55,6 +62,12 @@ public class UserController extends HttpServlet {
                 break;
             case "customerList":
                 listCustomers(request, response);
+                break;
+            case "topup":
+                topupBalance(request, response);
+                break;
+            case "buyTicket":
+                buyTicket(request, response);
                 break;
             default:
                 request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -133,7 +146,7 @@ public class UserController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("currentUser", user);
-            response.sendRedirect("UserController?action=profile");
+            response.sendRedirect("homepage.jsp");
         } else {
             request.setAttribute("error", "Email hoặc mật khẩu không chính xác.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -265,5 +278,99 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         request.getSession().invalidate();
         response.sendRedirect("UserController?action=login");
+    }
+
+    private void topupBalance(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            response.sendRedirect("UserController?action=login");
+            return;
+        }
+        String amountStr = request.getParameter("amount");
+        try {
+            long amount = Long.parseLong(amountStr);
+            if (amount > 0) {
+                dal.KhachHangDAO khDAO = new dal.KhachHangDAO();
+                khDAO.napTien(currentUser.getId(), amount);
+            }
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        response.sendRedirect("homepage.jsp");
+    }
+
+    private void buyTicket(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            response.sendRedirect("UserController?action=login");
+            return;
+        }
+
+        String maLoaiVe = request.getParameter("maLoaiVe");
+        if (maLoaiVe == null || maLoaiVe.trim().isEmpty()) {
+            response.sendRedirect("muave.jsp");
+            return;
+        }
+
+        KhachHangDAO khDAO = new KhachHangDAO();
+        KhachHangDTO kh = khDAO.layKhachHangTheoMa(currentUser.getId());
+
+        LoaiVeDAO loaiVeDAO = new LoaiVeDAO();
+        LoaiVeDTO loaiVe = loaiVeDAO.getLoaiVeById(maLoaiVe);
+
+        if (kh == null || loaiVe == null) {
+            request.setAttribute("error", "Không tìm thấy thông tin vé hoặc khách hàng.");
+            request.getRequestDispatcher("muave.jsp").forward(request, response);
+            return;
+        }
+
+        if (kh.getLongSoDu() < loaiVe.getLongGiaVe()) {
+            request.setAttribute("error", "Số dư không đủ để mua vé này. Vui lòng nạp thêm tiền.");
+            request.getRequestDispatcher("muave.jsp").forward(request, response);
+            return;
+        }
+
+        // Tính ngày hết hạn based on ticket type name
+        Date ngayMua = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(ngayMua);
+        String tenLoai = loaiVe.getStrTenLoaiVe() != null ? loaiVe.getStrTenLoaiVe().toLowerCase() : "";
+
+        if (tenLoai.contains("lượt") || tenLoai.contains("luot")) {
+            // Vé lượt: hết hạn cuối ngày hôm nay
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.SECOND, 59);
+        } else if (tenLoai.contains("tuần") || tenLoai.contains("tuan")) {
+            // Vé tuần: 7 ngày
+            cal.add(Calendar.DAY_OF_YEAR, 7);
+        } else if (tenLoai.contains("tháng") || tenLoai.contains("thang")) {
+            // Vé tháng: 30 ngày
+            cal.add(Calendar.DAY_OF_YEAR, 30);
+        } else {
+            // Mặc định: 30 ngày
+            cal.add(Calendar.DAY_OF_YEAR, 30);
+        }
+        Date ngayHetHan = cal.getTime();
+
+        // Deduct balance
+        boolean deducted = khDAO.napTien(currentUser.getId(), -loaiVe.getLongGiaVe());
+        if (!deducted) {
+            request.setAttribute("error", "Có lỗi khi trừ số dư. Vui lòng thử lại.");
+            request.getRequestDispatcher("muave.jsp").forward(request, response);
+            return;
+        }
+
+        // Create ticket record
+        String maVe = "VE" + System.currentTimeMillis();
+        VeDTO ve = new VeDTO(maVe, maLoaiVe, currentUser.getId(), ngayMua, ngayHetHan, "Còn hạn");
+        VeDAO veDAO = new VeDAO();
+        veDAO.insertVe(ve);
+
+        response.sendRedirect("thongtinve.jsp");
     }
 }
