@@ -19,7 +19,10 @@ import model.UserDAO;
 import dto.KhachHangDTO;
 import dto.LoaiVeDTO;
 import dto.VeDTO;
+import dto.HDMuaVeDTO;
+import dto.CTHDMuaVeDTO;
 import dal.KhachHangDAO;
+import dal.HoaDonMuaVeDAO;
 import dal.LoaiVeDAO;
 import dal.VeDAO;
 
@@ -291,14 +294,23 @@ public class UserController extends HttpServlet {
         String amountStr = request.getParameter("amount");
         try {
             long amount = Long.parseLong(amountStr);
-            if (amount > 0) {
-                dal.KhachHangDAO khDAO = new dal.KhachHangDAO();
-                khDAO.napTien(currentUser.getId(), amount);
+            if (amount <= 0) {
+                request.setAttribute("error", "Số tiền nạp phải lớn hơn 0.");
+                request.getRequestDispatcher("naptien.jsp").forward(request, response);
+                return;
+            }
+            // napTien() sẽ tự INSERT KhachHang mới nếu người dùng chưa có trong bảng đó
+            dal.KhachHangDAO khDAO = new dal.KhachHangDAO();
+            boolean success = khDAO.napTien(currentUser.getId(), amount);
+            if (success) {
+                request.setAttribute("message", "Nạp tiền thành công!");
+            } else {
+                request.setAttribute("error", "Nạp tiền thất bại. Vui lòng thử lại.");
             }
         } catch (NumberFormatException e) {
-            // ignore
+            request.setAttribute("error", "Số tiền không hợp lệ.");
         }
-        response.sendRedirect("homepage.jsp");
+        request.getRequestDispatcher("naptien.jsp").forward(request, response);
     }
 
     private void buyTicket(HttpServletRequest request, HttpServletResponse response)
@@ -316,9 +328,16 @@ public class UserController extends HttpServlet {
             return;
         }
 
+        // --- Kiểm tra khách hàng ---
         KhachHangDAO khDAO = new KhachHangDAO();
         KhachHangDTO kh = khDAO.layKhachHangTheoMa(currentUser.getId());
+        if (kh == null) {
+            // Người mới chưa có trong bảng KhachHang → tạo mới với SoDu = 0
+            khDAO.themMoiKhachHang(currentUser.getId());
+            kh = khDAO.layKhachHangTheoMa(currentUser.getId());
+        }
 
+        // --- Kiểm tra loại vé ---
         LoaiVeDAO loaiVeDAO = new LoaiVeDAO();
         LoaiVeDTO loaiVe = loaiVeDAO.getLoaiVeById(maLoaiVe);
 
@@ -328,36 +347,33 @@ public class UserController extends HttpServlet {
             return;
         }
 
+        // --- Kiểm tra số dư ---
         if (kh.getLongSoDu() < loaiVe.getLongGiaVe()) {
             request.setAttribute("error", "Số dư không đủ để mua vé này. Vui lòng nạp thêm tiền.");
             request.getRequestDispatcher("muave.jsp").forward(request, response);
             return;
         }
 
-        // Tính ngày hết hạn based on ticket type name
+        // --- Tính ngày hết hạn dựa vào tên loại vé ---
         Date ngayMua = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(ngayMua);
         String tenLoai = loaiVe.getStrTenLoaiVe() != null ? loaiVe.getStrTenLoaiVe().toLowerCase() : "";
 
         if (tenLoai.contains("lượt") || tenLoai.contains("luot")) {
-            // Vé lượt: hết hạn cuối ngày hôm nay
             cal.set(Calendar.HOUR_OF_DAY, 23);
             cal.set(Calendar.MINUTE, 59);
             cal.set(Calendar.SECOND, 59);
         } else if (tenLoai.contains("tuần") || tenLoai.contains("tuan")) {
-            // Vé tuần: 7 ngày
             cal.add(Calendar.DAY_OF_YEAR, 7);
         } else if (tenLoai.contains("tháng") || tenLoai.contains("thang")) {
-            // Vé tháng: 30 ngày
             cal.add(Calendar.DAY_OF_YEAR, 30);
         } else {
-            // Mặc định: 30 ngày
             cal.add(Calendar.DAY_OF_YEAR, 30);
         }
         Date ngayHetHan = cal.getTime();
 
-        // Deduct balance
+        // --- BƯỚC 1: Trừ số dư KhachHang ---
         boolean deducted = khDAO.napTien(currentUser.getId(), -loaiVe.getLongGiaVe());
         if (!deducted) {
             request.setAttribute("error", "Có lỗi khi trừ số dư. Vui lòng thử lại.");
@@ -365,9 +381,34 @@ public class UserController extends HttpServlet {
             return;
         }
 
-        // Create ticket record
+        // --- BƯỚC 2: Tạo HoaDonMuaVe ---
+        String maHD = "HD" + System.currentTimeMillis();
+        // Cắt ngắn nếu MaHD vượt 5 ký tự (do schema varchar(5))
+        if (maHD.length() > 5) {
+            maHD = maHD.substring(maHD.length() - 5);
+        }
+        HDMuaVeDTO hd = new HDMuaVeDTO(maHD, currentUser.getId(), ngayMua, loaiVe.getLongGiaVe());
+        HoaDonMuaVeDAO hdDAO = new HoaDonMuaVeDAO();
+        boolean hdInserted = hdDAO.insertHoaDon(hd);
+
+        if (!hdInserted) {
+            // Hoàn lại tiền nếu tạo hóa đơn thất bại
+            khDAO.napTien(currentUser.getId(), loaiVe.getLongGiaVe());
+            request.setAttribute("error", "Có lỗi khi tạo hóa đơn. Vui lòng thử lại.");
+            request.getRequestDispatcher("muave.jsp").forward(request, response);
+            return;
+        }
+
+        // --- BƯỚC 3: Thêm ChiTietHoaDonMuaVe (upsert SoLuongVe + 1) ---
+        CTHDMuaVeDTO ct = new CTHDMuaVeDTO(maHD, maLoaiVe, 1);
+        hdDAO.insertOrIncrementChiTiet(ct);
+
+        // --- BƯỚC 4: Thêm mới vé vào c_Ve ---
         String maVe = "VE" + System.currentTimeMillis();
-        VeDTO ve = new VeDTO(maVe, maLoaiVe, currentUser.getId(), ngayMua, ngayHetHan, "Còn hạn");
+        if (maVe.length() > 5) {
+            maVe = maVe.substring(maVe.length() - 5);
+        }
+        VeDTO ve = new VeDTO(maVe, maLoaiVe, currentUser.getId(), ngayMua, ngayHetHan, "Dang su dung");
         VeDAO veDAO = new VeDAO();
         veDAO.insertVe(ve);
 

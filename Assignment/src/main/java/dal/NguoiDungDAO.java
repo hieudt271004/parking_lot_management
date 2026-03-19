@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import DTO.NguoiDungDTO;
+import dto.NguoiDungDTO;
 
 public class NguoiDungDAO extends DBContext{
 

@@ -37,7 +37,7 @@
         <h3 id="name"><%= currentUser.getFullName() != null && !currentUser.getFullName().isEmpty() ? currentUser.getFullName() : currentUser.getEmail() %></h3>
 
         <ul>
-            <li onclick="window.location.href='homepage.jsp'" style="background:rgba(255,255,255,0.15)">🏠 Dashboard</li>
+            <li onclick="window.location.href='homepage.jsp'" style="background:rgba(255,255,255,0.15)">🏠 Homepage</li>
             <li onclick="window.location.href='thongtinve.jsp'">🎫 Thông tin vé</li>
             <li onclick="window.location.href='muave.jsp'">🛒 Mua vé</li>
             <li onclick="window.location.href='naptien.jsp'">💰 Nạp tiền</li>
@@ -68,11 +68,6 @@
             <div class="card" onclick="window.location.href='naptien.jsp'" style="cursor:pointer">
                 <img src="icon/money.png" alt="Money">
                 <button>Nạp tiền</button>
-            </div>
-
-            <div class="card">
-                <img src="icon/cart.png" alt="Cart">
-                <button>Giỏ hàng</button>
             </div>
         </div>
     </div>

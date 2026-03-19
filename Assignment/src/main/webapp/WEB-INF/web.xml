@@ -8,4 +8,9 @@
             30
         </session-timeout>
     </session-config>
+
+    <!-- Scheduler tự động cập nhật trạng thái vé mỗi 24 giờ -->
+    <listener>
+        <listener-class>scheduler.VeStatusScheduler</listener-class>
+    </listener>
 </web-app>
