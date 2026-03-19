@@ -141,12 +141,12 @@
                 <div class="card-desc">Xem vé đã mua</div>
             </div>
             <div class="action-card" onclick="window.location.href='muave.jsp'">
-                <img src="icon/buy.png" alt="Buy">
+                <img src="icon/cart.png" alt="Buy">
                 <div class="card-title">🛒 Mua vé</div>
                 <div class="card-desc">Mua vé gửi xe</div>
             </div>
             <div class="action-card" onclick="window.location.href='naptien.jsp'">
-                <img src="icon/money.png" alt="Money">
+                <img src="icon/growth.png" alt="Money">
                 <div class="card-title">💰 Nạp tiền</div>
                 <div class="card-desc">Nạp thêm vào ví</div>
             </div>
