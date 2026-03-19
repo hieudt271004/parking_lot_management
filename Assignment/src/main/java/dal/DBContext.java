@@ -8,7 +8,7 @@ public class DBContext {
 
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=QL_BAIGUIXE;encrypt=true;trustServerCertificate=true";
     private static final String USER = "sa";
-    private static final String PASSWORD = "123"; // sửa theo máy bạn
+    private static final String PASSWORD = "Trang0209@"; // sửa theo máy bạn
 
     public static Connection getConnection() {
         Connection conn = null;

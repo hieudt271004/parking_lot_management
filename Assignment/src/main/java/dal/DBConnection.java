@@ -11,7 +11,7 @@ public class DBConnection {
     private static final String DEFAULT_DB = "QL_BAIGUIXE";
     // Replace with your SQL Server username and password or use integratedSecurity=true
     private static final String USERNAME = "sa"; 
-    private static final String PASSWORD = "123"; 
+    private static final String PASSWORD = "Trang0209@"; 
 
     public static Connection getConnection() {
         Connection conn = null;

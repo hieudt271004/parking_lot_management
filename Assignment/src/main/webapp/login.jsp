@@ -1,43 +1,52 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Đăng nhập</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập – FPT Parking</title>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background-color: white; padding: 20px 40px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); width: 300px; }
-        h2 { text-align: center; color: #333; }
-        input[type="email"], input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
-        input[type="submit"] { width: 100%; background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px;}
-        input[type="submit"]:hover { background-color: #218838; }
-        .error { color: red; text-align: center; margin-bottom: 10px;}
-        .msg { color: green; text-align: center; margin-bottom: 10px;}
-        .links { text-align: center; margin-top: 15px; }
-        .links a { color: #007bff; text-decoration: none; }
+        .login-logo { font-size: 2.8rem; text-align:center; margin-bottom: 4px; }
+        .login-logo-text { text-align:center; font-size:.78rem; text-transform:uppercase;
+            letter-spacing:3px; color:var(--text-muted); margin-bottom:28px; }
+        .login-container h2 { font-size:1.5rem; }
+        .divider-or { display:flex; align-items:center; gap:10px; color:var(--text-muted);
+            font-size:.8rem; margin: 6px 0 18px; }
+        .divider-or::before, .divider-or::after { content:''; flex:1;
+            height:1px; background:var(--border); }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h2>Đăng nhập Hệ Thống</h2>
+<body class="login-body">
+    <div class="login-container" style="animation:fadeSlideUp .4s ease;">
+        <div class="login-logo">🅿️</div>
+        <div class="login-logo-text">FPT Parking System</div>
+        <h2>Chào mừng trở lại</h2>
+        <p class="subtitle">Đăng nhập để quản lý tài khoản của bạn</p>
 
-        <% String error = (String) request.getAttribute("error"); 
-           if (error != null) { out.println("<div class='error'>" + error + "</div>"); } %>
-           
-        <% String msg = (String) request.getAttribute("message"); 
-           if (msg != null) { out.println("<div class='msg'>" + msg + "</div>"); } %>
+        <% String error = (String) request.getAttribute("error");
+           if (error != null) { %>
+            <div class="error">⚠ <%= error %></div>
+        <% } %>
+
+        <% String msg = (String) request.getAttribute("message");
+           if (msg != null) { %>
+            <div class="msg">✅ <%= msg %></div>
+        <% } %>
 
         <form action="UserController" method="post">
             <input type="hidden" name="action" value="login">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            
-            <label for="password">Mật khẩu:</label>
-            <input type="password" id="password" name="password" required>
-            
-            <input type="submit" value="Đăng nhập">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-login">Đăng nhập →</button>
         </form>
-        
+
         <div class="links">
             <p>Chưa có tài khoản? <a href="UserController?action=register">Đăng ký ngay</a></p>
         </div>
