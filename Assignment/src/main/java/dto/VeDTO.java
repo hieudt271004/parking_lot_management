@@ -21,10 +21,13 @@ public class VeDTO {
 
     @Override
     public String toString() {
-        return "VeDTO{" + "strMaVe=" + strMaVe + ", strMaLoaiVe=" + strMaLoaiVe + ", strMaKH=" + strMaKH + ", dateNgayKichHoat=" + dateNgayKichHoat + ", dateNgayHetHan=" + dateNgayHetHan + ", strTrangThai=" + strTrangThai + '}';
+        return "VeDTO{" + "strMaVe=" + strMaVe + ", strMaLoaiVe=" + strMaLoaiVe + ", strMaKH=" + strMaKH
+                + ", dateNgayKichHoat=" + dateNgayKichHoat + ", dateNgayHetHan=" + dateNgayHetHan + ", strTrangThai="
+                + strTrangThai + '}';
     }
 
-    public VeDTO(String strMaVe, String strMaLoaiVe, String strMaKH, Date dateNgayKichHoat, Date dateNgayHetHan, String strTrangThai) {
+    public VeDTO(String strMaVe, String strMaLoaiVe, String strMaKH, Date dateNgayKichHoat, Date dateNgayHetHan,
+            String strTrangThai) {
         this.strMaVe = strMaVe;
         this.strMaLoaiVe = strMaLoaiVe;
         this.strMaKH = strMaKH;
@@ -80,7 +83,5 @@ public class VeDTO {
     public void setStrTrangThai(String strTrangThai) {
         this.strTrangThai = strTrangThai;
     }
-
-    
 
 }

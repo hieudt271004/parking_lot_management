@@ -23,7 +23,8 @@ public class LoaiVeDTO {
 
     @Override
     public String toString() {
-        return "LoaiVeDTO{" + "strMaLoaiVe=" + strMaLoaiVe + ", strTenLoaiVe=" + strTenLoaiVe + ", longGiaVe=" + longGiaVe + '}';
+        return "LoaiVeDTO{" + "strMaLoaiVe=" + strMaLoaiVe + ", strTenLoaiVe=" + strTenLoaiVe + ", longGiaVe="
+                + longGiaVe + '}';
     }
 
     public String getStrMaLoaiVe() {
@@ -49,6 +50,5 @@ public class LoaiVeDTO {
     public void setLongGiaVe(long longGiaVe) {
         this.longGiaVe = longGiaVe;
     }
-    
-    
+
 }
