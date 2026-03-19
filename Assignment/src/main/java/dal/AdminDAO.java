@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import model.Xe;
 
-public class AdminDAO extends DBContext {
+public class AdminDAO extends DBContexts {
 
     public void addXe(String maXe, String bienSo, String loaiXe) {
         if (connection == null) {

@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NhanVienDAO extends DBContext {
+public class NhanVienDAO extends DBContexts {
 
     public List<NhanVienDTO> getAllNhanVien() {
         if (connection == null) {

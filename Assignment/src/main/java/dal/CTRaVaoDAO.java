@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class CTRaVaoDAO extends DBContext {
+public class CTRaVaoDAO extends DBContexts {
 
     // Actual table name in DB: ChiTietRaVao (not CTRaVao)
     // Columns: MaCTRaVao, ThoiGianVao, ThoiGianRa, MaKH, MaXe, MaTheKVL

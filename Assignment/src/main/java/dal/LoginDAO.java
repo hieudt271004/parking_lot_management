@@ -3,7 +3,7 @@ package dal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class LoginDAO extends DBContext {
+public class LoginDAO extends DBContexts {
 
     /**
      * Authenticate a user by Email and MatKhau.

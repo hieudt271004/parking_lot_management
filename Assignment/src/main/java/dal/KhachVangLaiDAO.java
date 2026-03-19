@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KhachVangLaiDAO extends DBContext {
+public class KhachVangLaiDAO extends DBContexts {
 
     public List<KhachVangLaiDTO> getAllKhachVangLai() {
         if (connection == null) {
